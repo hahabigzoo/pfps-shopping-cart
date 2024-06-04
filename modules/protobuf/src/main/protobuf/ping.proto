@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package shop.protobuf;
+
+message PingRequest {
+  string name = 1;
+}
+
+message PingReply {
+  string message = 1;
+}
+
+service PingService {
+  rpc ping (stream PingRequest) returns (stream PingReply);
+}

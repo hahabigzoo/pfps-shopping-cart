@@ -1,4 +1,5 @@
 import Dependencies._
+import sbt.Keys.libraryDependencies
 
 ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / version := "2.0.0"
@@ -39,6 +40,9 @@ lazy val tests = (project in file("modules/tests"))
     )
   )
   .dependsOn(core)
+
+lazy val protobuf = (project in file("modules/protobuf"))
+    .enablePlugins(Fs2Grpc)
 
 lazy val core = (project in file("modules/core"))
   .enablePlugins(DockerPlugin)
@@ -90,7 +94,13 @@ lazy val core = (project in file("modules/core"))
       Libraries.skunkCore,
       Libraries.skunkCirce,
       Libraries.squants
-    )
+    ),
+    libraryDependencies += "io.grpc" % "grpc-netty-shaded" % scalapb.compiler.Version.grpcJavaVersion,
+    libraryDependencies += "io.grpc" % "grpc-protobuf" % "1.45.0",    // gRPC protobuf 插件
+    libraryDependencies += "io.grpc" % "grpc-services" % "1.45.0",     // This adds the reflection service
+
+
   )
+  .dependsOn(protobuf)
 
 addCommandAlias("runLinter", ";scalafixAll --rules OrganizeImports")
